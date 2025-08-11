@@ -5,6 +5,7 @@ const connection = mysql.createPool({
     user: 'root',
     password: '0000',
     database: 'cocotech',
+    multipleStatements: true 
 });
 
 export default connection;
