@@ -107,3 +107,41 @@ FROM txn_history
 GROUP BY user_id, stock_id
 HAVING net_units <> 0;
 
+
+CREATE OR REPLACE VIEW wallet_movements AS
+SELECT 
+    user_id,
+    SUM(
+        CASE 
+            WHEN is_topup = b'1' THEN txn_amt     -- topup adds to cash
+            WHEN is_topup = b'0' THEN -txn_amt    -- cashout reduces cash
+            ELSE 0
+        END
+    ) AS total_wallet
+FROM wallets
+GROUP BY user_id;
+
+CREATE OR REPLACE VIEW stock_cashflow AS
+SELECT 
+    user_id,
+    SUM(
+        CASE 
+            WHEN is_buy = b'0' THEN amount     -- Sell adds to cash
+            WHEN is_buy = b'1' THEN -amount    -- Buy reduces cash
+            ELSE 0
+        END
+    ) AS total_stock_cash
+FROM txn_history
+GROUP BY user_id;
+
+
+CREATE OR REPLACE VIEW user_wallet_balance AS
+SELECT 
+    u.id AS user_id,
+    COALESCE(w.total_wallet, 0) + COALESCE(s.total_stock_cash, 0) AS current_balance
+FROM (
+    SELECT id FROM users
+) u
+LEFT JOIN wallet_movements w ON u.id = w.user_id
+LEFT JOIN stock_cashflow s ON u.id = s.user_id;
+
