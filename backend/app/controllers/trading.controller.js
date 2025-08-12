@@ -67,7 +67,7 @@ export const walletBalance = async (req, res) => {
     try {
       const user_id = req.params.user_id;
       const result = await tradingService.calculateWalletBalance(user_id);
-      res.status(201).json(result);
+      res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -80,9 +80,12 @@ export const stockBalance = async (req, res) => {
       const { user_id, stock_id } = req.params;
 
       const result = await tradingService.calculateStockBalance(user_id,stock_id);
-      res.status(201).json(result);
+      res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+}
 
+export const test = (req, res) => {
+  res.status(200).json({result: "hello"});
 }

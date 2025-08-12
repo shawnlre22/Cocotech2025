@@ -10,4 +10,6 @@ router.post('/sell', tradingController.sell);
 router.get('/wallet/:user_id', tradingController.walletBalance);
 router.get('/stock_balance/:user_id/:stock_id', tradingController.stockBalance);
 
+router.get('/test', tradingController.test);
+
 export default router;
