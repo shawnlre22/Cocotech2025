@@ -6,7 +6,7 @@ export const buy = async (user_id, stock_id, unit_stock_price, units_of_stock, t
 		const now = new Date();
         const sqlDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
 
-        await connection.query(`INSERT INTO cocotech1.txn_history
+        await connection.query(`INSERT INTO txn_history
 (user_id,
 stock_id,
 units_of_stock,
@@ -63,4 +63,32 @@ export const calculateStockBalance = async (user_id,stock_id) => {
         console.error('Error calculating wallet balance', error);
         throw error;
     }      
+}
+
+//POST
+export const topUpCashOut = async (user_id,amount, is_top_up) => {
+  try {
+    const now = new Date();
+    const sqlDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
+
+
+    const query = `
+    INSERT INTO wallets
+(user_id,
+txn_time,
+amount,
+is_topup)
+VALUES
+(?,?,?,?)
+    `
+    const result = await connection.query(query, [user_id, sqlDateTime, amount, is_top_up])
+
+    return { user_id, amount, is_top_up,
+            txn_time: sqlDateTime,
+            message: `Wallet ${is_top_up ? "Top Up" : "Cash Out"} Success` };
+  }
+  catch (error) {
+        console.error('Error Top Up or Cash Out', error);
+        throw error;
+    }       
 }
