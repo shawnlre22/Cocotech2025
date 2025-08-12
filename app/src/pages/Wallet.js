@@ -1,5 +1,11 @@
+import NavBar from '../Components/NavBar';
+
 const Wallet = () => {
-    return <h1>Wallet Information</h1>;
-  };
+    return (
+    <>
+    <NavBar></NavBar>
+    <h2>Wallet Information</h2>
+    </>
+    )};
   
   export default Wallet;

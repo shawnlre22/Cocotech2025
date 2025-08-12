@@ -1,0 +1,16 @@
+.CardInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping if necessary */
+    gap: 20px; /* Space between cards */
+}
+
+.CardInfo > div {
+    flex: 1; /* Allow cards to grow and fill available space */
+    min-width: 250px; /* Minimum width for each card */
+}
+
+.card {
+    width: 100%; /* Make card take full width of the containing div */
+}
