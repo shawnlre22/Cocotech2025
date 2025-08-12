@@ -156,3 +156,14 @@ export const cashOut = async (req, res) => {
 function floatLessThanOrEqual(a, b, epsilon = 1e-10) {
   return a < b || Math.abs(a - b) < epsilon;
 }
+
+export const getAllStocks = async (req, res) => {
+  try {
+    const result = await tradingService.getAllStocks();
+   
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+  
+}
