@@ -1,10 +1,41 @@
 import * as tradingService from '../services/trading.service.js';
-
+import axios from 'axios';
 /*
 userid, stockid
 fetch price,
 execute
 */
+
+
+/**
+ * Fetch stock data from Yahoo Finance
+ * @param {string} symbol - The stock symbol (e.g., "AAPL" for Apple)
+ * @returns {Promise<Object>} - The stock data
+ */
+
+
+const fetchStockData = async (symbol) => {
+  try {  
+      const now = Math.floor(Date.now() / 1000); // current Unix timestamp
+      const oneDayAgo = now - 24 * 60 * 60;      // 1 day ago
+
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?` +
+      `symbol=${symbol}&period1=${oneDayAgo}&period2=${now}&interval=1m&` +
+      `includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&region=US`;
+      const response = await axios.get(url);
+
+      if (response.data && response.data.chart && response.data.chart.result.length > 0) {
+          const regMarket = response.data.chart.result[0]["meta"]["previousClose"];
+          return regMarket;
+      } else {
+          throw new Error('No data found for the given symbol');
+      }
+  } catch (error) {
+      console.error(`Error fetching stock data for ${symbol}:`, error.message);
+      throw error;
+  }
+};
+
 export const buy = async (req, res) => {
     try {
         const body = req.body;
@@ -124,4 +155,15 @@ export const cashOut = async (req, res) => {
 
 function floatLessThanOrEqual(a, b, epsilon = 1e-10) {
   return a < b || Math.abs(a - b) < epsilon;
+}
+
+export const getAllStocks = async (req, res) => {
+  try {
+    const result = await tradingService.getAllStocks();
+   
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+  
 }

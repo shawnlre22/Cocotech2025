@@ -92,3 +92,15 @@ VALUES
         throw error;
     }       
 }
+
+
+export const getAllStocks = async () => {
+  try {
+  const query = `SELECT * FROM stocks`
+  const result = await connection.query(query);
+  return {result: result[0]};
+  } catch (error) {
+    console.error('Error getting all stocks', error);
+    throw error;
+  }
+}
