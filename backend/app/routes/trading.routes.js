@@ -12,6 +12,7 @@ router.post('/wallet/topup', tradingController.topUp);
 router.post('/wallet/cashout', tradingController.cashOut);
 
 router.get('/stock_balance/:user_id/:stock_id', tradingController.stockBalance);
+router.get('/stock_balances/:user_id', tradingController.stockBalances);
 
 router.get('/test', tradingController.test);
 

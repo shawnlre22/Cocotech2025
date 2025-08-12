@@ -51,6 +51,21 @@ export const calculateWalletBalance = async (user_id) => {
 
 
 //GET
+export const calculateStockBalances = async(user_id) => {
+  try {
+      const result = await connection.query(` SELECT *  
+        FROM active_trades WHERE user_id = ?`,
+        [user_id]);
+
+      return {result: result[0]};
+    }
+    catch (error) {
+        console.error('Error calculating wallet balance', error);
+        throw error;
+    } 
+}
+
+//GET
 export const calculateStockBalance = async (user_id,stock_id) => {
     try {
       const result = await connection.query(` SELECT *  
