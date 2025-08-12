@@ -15,4 +15,6 @@ router.get('/stock_balance/:user_id/:stock_id', tradingController.stockBalance);
 
 router.get('/test', tradingController.test);
 
+router.get('/stocks', tradingController.getAllStocks);
+
 export default router;
