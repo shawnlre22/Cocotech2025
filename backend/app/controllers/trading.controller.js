@@ -1,4 +1,41 @@
 import * as tradingService from '../services/trading.service.js';
+import axios from 'axios';
+
+/**
+ * Fetch stock data from Yahoo Finance
+ * @param {string} symbol - The stock symbol (e.g., "AAPL" for Apple)
+ * @returns {Promise<Object>} - The stock data
+ */
+const fetchStockData = async (symbol) => {
+    try {  
+        const start_time = Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 8); // 8 days ago
+        const end_time = Math.floor(Date.now() / 1000); // now
+        const interval = '1m'; 
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}` +
+        `&period1=${start_time}&period2=${end_time}&interval=${interval}&` +
+        `includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&` +
+        `region=US&crumb=t5QZMhgytYZ&corsDomain=finance.yahoo.com`;
+//console.log(`Fetching stock data from: ${url}`);
+
+        const response = await axios.get(url);
+        //console.log(response.data.chart.result);
+
+        if (response.data && response.data.chart && response.data.chart.result.length > 0) {
+          const result = response.data.chart.result[0]["meta"]["regularMarketPrice"];
+          //const quote = result.indicators.quote[0]; // Access the first quote array
+          console.log(result); // Log the quote data for debugging
+          return result;
+        } else {
+            throw new Error('No data found for the given symbol');
+        }
+    } catch (error) {
+        console.error(`Error fetching stock data for ${symbol}:`, error.message);
+        throw error;
+    }
+};
+
+
+fetchStockData("NVDA")
 
 /*
 userid, stockid
