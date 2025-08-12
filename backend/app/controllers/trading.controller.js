@@ -89,3 +89,39 @@ export const stockBalance = async (req, res) => {
 export const test = (req, res) => {
   res.status(200).json({result: "hello"});
 }
+
+export const topUp = async (req, res) => {
+    try {
+      const { user_id, amount } = req.body;
+      const is_top_up = 1;
+      const result = await tradingService.topUpCashOut(user_id,amount,is_top_up);
+      res.status(201).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const cashOut = async (req, res) => {
+    try {
+      const { user_id, amount } = req.body;
+      const is_top_up = 0;
+
+      //check wallet current balance
+      const resultjson = await tradingService.calculateWalletBalance(user_id);
+      const walletBalance = resultjson.result.balance;
+ 
+
+      if (!floatLessThanOrEqual(amount, walletBalance)) {
+        throw new Error("Insufficient wallet balance");
+      }
+
+      const result = await tradingService.topUpCashOut(user_id,amount,is_top_up);
+      res.status(201).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+function floatLessThanOrEqual(a, b, epsilon = 1e-10) {
+  return a < b || Math.abs(a - b) < epsilon;
+}
