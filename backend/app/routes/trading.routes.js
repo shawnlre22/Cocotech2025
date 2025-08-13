@@ -19,4 +19,8 @@ router.get('/test', tradingController.test);
 
 router.get('/stocks', tradingController.getAllStocks);
 
+router.get('/stocksCost/:user_id', tradingController.getStocksCost)
+
+router.get('/txnHistory/:user_id', tradingController.getTxnHistory)
+
 export default router;

@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from "react-bootstrap/InputGroup";
 import axios from 'axios'
+import { BrowserRouter as  useLocation } from 'react-router-dom';
 
 //TODO: 1. fetch stocks price
 // 2. submit form call api and handle error
@@ -33,7 +34,11 @@ export const BuySellForm = () => {
     const [isValid, setIsValid] = useState(true);
 
 
-
+    //const location = useLocation();
+    const queryParams = new URLSearchParams(window.location.search); // Parse query string
+    
+    const stockIdQuery = queryParams.get('stock_id');
+    const isBuyQuery = queryParams.get('is_buy');
 
   
 
@@ -66,7 +71,14 @@ export const BuySellForm = () => {
             const tmpList = []
             stockIdJson.result.map(obj => tmpList.push(obj.id))
             setStockIds(tmpList)
-            setStockId(stockIdJson.result[0].id)
+             //setStockId(stockIdJson.result[0].id)
+            
+            if (stockIdQuery) {
+              setStockId(stockIdQuery)
+            } else {
+              setStockId(stockIdJson.result[0].id)
+            }
+              
             
           }
 
@@ -84,7 +96,6 @@ export const BuySellForm = () => {
             stockBalancesJson.result.forEach(obj => {
               tmpMap[obj.stock_id] = Number(obj.net_units);
             })
-            console.log(tmpMap)
             setStockBalances(tmpMap)
           } 
 
@@ -99,6 +110,12 @@ export const BuySellForm = () => {
         } catch (err) {
           console.error("Error fetching data:", err);
         } finally {
+          
+          if (isBuyQuery) {
+            console.log(isBuyQuery)
+            setIsBuy(Number(isBuyQuery))
+          }
+            
           setLoading(false);
         }
         
