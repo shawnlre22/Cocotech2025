@@ -16,37 +16,6 @@ import React, { useState } from "react";
 const Trading = () => {
 
 
-const assetDataTmp = [
-  { name: 'Stocks', value: 400 },
-  { name: 'Bonds', value: 300 },
-  { name: 'Crypto', value: 200 },
-  { name: 'Cash', value: 100 },
-  { name: 'Cash2', value: 10 },
-];  //dummy trades
-
-
-const [isBuy, setIsBuy] = useState(1) //1:buy 0:sell
-    
-const userId = 1;
-
-const [loading, setLoading] = useState(true);
-
-//form fields
-const [stockId, setStockId] = useState('')
-const [unitStockPrices, setUnitStockPrices] = useState({});
-const [unitsOfStock, setUnitsOfStock] = useState(0);
-const [totalPrice, setTotalPrice] = useState(0);
-
-//for ddl
-const [stockIds, setStockIds] = useState([])
-
-//wallet stock balance
-const [walletBalance, setWalletBalance] = useState(0);
-const [stockBalances, setStockBalances] = useState([]);
-
-//form assistance
-const [lastChanged, setLastChanged] = useState("");
-const [isValid, setIsValid] = useState(true);
 
 
 //1. 3 cards
@@ -89,8 +58,8 @@ React.useEffect(() => {
           if (stockIdJson.result) {
             const tmpList = []
             stockIdJson.result.map(obj => tmpList.push(obj.id))
-            setStockIds(tmpList)
-            setStockId(stockIdJson.result[0].id)
+            //setStockIds(tmpList)
+            //setStockId(stockIdJson.result[0].id)
             
           }
 
@@ -99,7 +68,7 @@ React.useEffect(() => {
 
            if (stockPricesJson.result) {
             console.log(stockPricesJson.result)
-            setUnitStockPrices(stockPricesJson.result)
+            //setUnitStockPrices(stockPricesJson.result)
           }
 
           const tmpMap = {}
@@ -125,7 +94,7 @@ React.useEffect(() => {
 
             })
             console.log(tmpTrades)
-            setStockBalances(tmpMap)
+            //setStockBalances(tmpMap)
             setTrades(tmpTrades)
 
             setAssetData(tmpAssetData)

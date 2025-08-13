@@ -3,6 +3,18 @@ import './ActiveTrades.css';
 
 const ActiveTrades = ({ trades }) => {
     console.log("AT:",trades)
+
+    const handleBuySellRedirect = (stock_id, is_buy) => {
+        const params = new URLSearchParams({
+            stock_id,
+            is_buy,
+            }).toString();
+           
+            window.location.href = `/buysell?${params}`;
+
+    }
+
+
     return (
         <div className="table-container">
             <table className="active-trades-table">
@@ -11,6 +23,8 @@ const ActiveTrades = ({ trades }) => {
                         <th>Stock Symbol</th>
                         <th>Quantity</th>
                         <th>Current Unit Price</th>
+
+                        <th>Action</th>
                         
                         
                     </tr>
@@ -21,6 +35,24 @@ const ActiveTrades = ({ trades }) => {
                         <td>{trade.stock_id}</td>
                             <td>{trade.quantity}</td>
                             <td>{trade.unit_price}</td>
+
+                            <td>
+                                <button onClick={() =>
+                                    handleBuySellRedirect(trade.stock_id, 1)
+                                }>
+                            
+                                    BUY
+                                </button>
+                                
+                                <button onClick={() =>
+                                    handleBuySellRedirect(trade.stock_id, 0)
+                                }>
+                            
+                                    SELL
+                                </button>
+
+
+                            </td>
                             
                         </tr>
                     ))}
