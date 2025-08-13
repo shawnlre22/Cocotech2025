@@ -136,3 +136,35 @@ export const getAllStocks = async () => {
     throw error;
   }
 }
+
+
+/*
+SELECT `active_trades`.`user_id`,
+    `active_trades`.`stock_id`,
+    `active_trades`.`net_units`,
+    `active_trades`.`cost`
+FROM `cocotech1`.`active_trades`;
+*/
+
+export const getStocksCost = async (user_id) => {
+  try {
+  const query = `SELECT * FROM active_trades WHERE user_id = ?`;
+
+  const result = await connection.query(query,[user_id]);
+  return {result: result[0]};
+  } catch (error) {
+    console.error('Error getting all stocks', error);
+    throw error;
+  }
+}
+
+export const getTxnHistory = async (user_id) => {
+  try {
+  const query = `SELECT * FROM txn_history WHERE user_id = ? ORDER BY txn_time DESC`;
+  const result = await connection.query(query,[user_id]);
+  return {result: result[0]};
+  } catch (error) {
+    console.error('Error getting all stocks', error);
+    throw error;
+  }
+}

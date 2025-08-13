@@ -84,7 +84,6 @@ export const BuySellForm = () => {
             stockBalancesJson.result.forEach(obj => {
               tmpMap[obj.stock_id] = Number(obj.net_units);
             })
-            console.log(tmpMap)
             setStockBalances(tmpMap)
           } 
 

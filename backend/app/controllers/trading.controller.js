@@ -249,3 +249,29 @@ export const getAllStocks = async (req, res) => {
     }
   
 }
+
+//invested value, +: cost, -:gain
+export const getStocksCost = async (req, res) => {
+  try {
+      const user_id = req.params.user_id;
+      const result = await tradingService.getStocksCost(user_id);
+   
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
+
+//invested value, +: cost, -:gain
+export const getTxnHistory = async (req, res) => {
+  try {
+      const user_id = req.params.user_id;
+      const result = await tradingService.getTxnHistory(user_id);
+   
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
