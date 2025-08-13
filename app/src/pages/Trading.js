@@ -4,6 +4,7 @@ import "../Components/DashboardSummary.css";
 import Container from 'react-bootstrap/esm/Container';
 import DashboardSummary from '../Components/DashboardSummary';
 import ActiveTrades from '../Components/ActiveTrades';
+import AssetLocation from '../Components/AssetLocation';
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -20,6 +21,12 @@ const Trading = () => {
     { id: '6', asset: 'NFLX', quantity: 3, price: 500, status: 'Active', riskStatus: 'High' },
 ]; //dummy trades
 
+const assetData = [
+  { name: 'Stocks', value: 400 },
+  { name: 'Bonds', value: 300 },
+  { name: 'Crypto', value: 200 },
+  { name: 'Cash', value: 100 },
+];  //dummy trades
 
 return (
 <>
@@ -27,7 +34,7 @@ return (
   <Container>
     <br></br>
     <h3>Trading Overview</h3>
-    <div class="CardInfo">
+    <div className="CardInfo">
       <div><DashboardSummary title="Total Portfolio Value" data="51000"></DashboardSummary></div>
       <div><DashboardSummary title="Total Invested Amount" data="45000"></DashboardSummary></div>
       <div><DashboardSummary title="Overall gain/loss" data="+6000"></DashboardSummary></div>
@@ -43,6 +50,8 @@ return (
       </Col>
       <Col sm={4}>
         <h4>Asset Location</h4>
+         {/* Donut chart */}
+         <AssetLocation data={assetData} />
       </Col>
     </Row>
   </Container>

@@ -1,0 +1,21 @@
+.asset-location-chart {
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .asset-location-chart h3 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  /* Optional: make legend smaller to fit better in column */
+  .recharts-default-legend {
+    font-size: 0.85rem;
+  }
+  
+  /* Optional: space around tooltip when hovered */
+  .recharts-tooltip-wrapper {
+    padding: 5px;
+  }
+  
