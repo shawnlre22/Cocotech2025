@@ -62,8 +62,7 @@ export const Wallet = () => {
   };
 
   // Check if Cash Out exceeds balance
-  const isCashOutInvalid =
-    isBuy === 0 && Number(amount) > walletBalance;
+  const isCashOutInvalid = isBuy === 0 && Number(amount) > walletBalance;
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -85,12 +84,20 @@ export const Wallet = () => {
       <Form.Group>
         <Form.Control
           type="number"
+          step="0.01"
+          min="0"
           placeholder="Enter amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           onKeyDown={(evt) => {
             if (["e", "+", "-"].includes(evt.key)) {
               evt.preventDefault();
+            }
+          }}
+          onBlur={() => {
+            if (amount) {
+              // Format to 2 decimal places on blur
+              setAmount(parseFloat(amount).toFixed(2));
             }
           }}
           required
