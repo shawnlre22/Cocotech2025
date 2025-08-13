@@ -36,28 +36,75 @@ const fetchStockData = async (symbol) => {
   }
 };
 
+export const fetchStockPrice = async(req, res) => {
+  try {
+    const { stock_id } = req.params;
+    const result = await fetchStockData(stock_id);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export const fetchStockPrices = async(req, res) => {
+  try {
+    const stock_ids_res  = await tradingService.getAllStocks();
+    const stock_ids = []
+    stock_ids_res.result.map(obj => stock_ids.push(obj.id))
+
+
+    const stockData = {};
+
+    const promises = stock_ids.map(async stock_id => {
+      try {
+        const result = await fetchStockData(stock_id);
+        return { stock_id, result };
+      } catch (error) {
+        console.error(`Error fetching data for stock_id ${stock_id}:`, error);
+        return { stock_id, result: null };
+      }
+    });
+
+    const results = await Promise.all(promises);
+    results.forEach(({ stock_id, result }) => {
+      stockData[stock_id] = result;
+    });
+
+
+    res.status(200).json({result:stockData});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export const buy = async (req, res) => {
     try {
         const body = req.body;
         const is_buy = 1;
 
-        //TODO: check wallet_amt > transaction amt
-
-
+       
         const user_id = body.user_id;
         const stock_id = body.stock_id;
+
+        //check wallet current balance
+        const resultjson = await tradingService.calculateWalletBalance(user_id);
+        const walletBalance = resultjson.result.balance;
 
         //capped by the total price!
         const total_price = body.total_price;
 
-        //TODO: placeholder or stub only, fetch by finance api!!!!!!
-        const new_unit_stock_price = 1.0; 
+        if (!floatLessThanOrEqual(total_price, walletBalance)) {
+         throw new Error("Insufficient wallet balance");
+        }
+
+        const new_unit_stock_price = await fetchStockData(stock_id); 
 
         const new_units_of_stock = body.total_price / new_unit_stock_price;
 
         const result = await tradingService.buy(user_id, stock_id, new_unit_stock_price, new_units_of_stock, total_price, is_buy);
         res.status(201).json(result);
     } catch (error) {
+      console.log(error.message)
         res.status(500).json({ error: error.message });
     }
 }
@@ -77,13 +124,19 @@ export const sell = async (req, res) => {
         const user_id = body.user_id;
         const stock_id = body.stock_id;
 
-
-        //TODO: placeholder or stub only, fetch by finance api!!!!!!
-        const new_unit_stock_price = 1.0; 
+        const new_unit_stock_price = await fetchStockData(stock_id); 
 
         //TODO: check current holdings!!!!!
         const units_of_stock = body.units_of_stock;
         const total_price = new_unit_stock_price * units_of_stock;
+
+        //check wallet current balance
+        const resultjson = await tradingService.calculateStockBalance(user_id,stock_id);
+        const stockBalance = resultjson.result.net_units;
+
+        if (!floatLessThanOrEqual(units_of_stock, stockBalance)) {
+         throw new Error("Insufficient stock balance");
+        }
 
 
         const result = await tradingService.buy(user_id, stock_id, new_unit_stock_price, units_of_stock, total_price, is_buy);
@@ -123,6 +176,17 @@ export const modifyWalletBalance = async (req, res) => {
 };
 
 
+
+export const stockBalances = async(req, res) => {
+  try {
+      const { user_id } = req.params;
+
+      const result = await tradingService.calculateStockBalances(user_id);
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 
 export const stockBalance = async (req, res) => {
     try {

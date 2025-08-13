@@ -144,4 +144,3 @@ FROM (
 ) u
 LEFT JOIN wallet_movements w ON u.id = w.user_id
 LEFT JOIN stock_cashflow s ON u.id = s.user_id;
-
