@@ -1,0 +1,28 @@
+.CardInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping if necessary */
+    gap: 20px; /* Space between cards */
+}
+
+.CardInfo > div {
+    flex: 1; /* Allow cards to grow and fill available space */
+    min-width: 250px; /* Minimum width for each card */
+}
+
+.CardInfo .card {
+    width: 100%;
+}
+
+.card-title.dashboard-summary-title {
+    font-size: 18px;
+    font-weight: normal;
+    color: #6c757d;
+}
+
+.card-text.dashboard-summary-data {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: #1f1e1e !important;
+}
