@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.post('/buy', tradingController.buy);
 router.post('/sell', tradingController.sell);
-//TODO: router.get('/fetch-price', tradingController.fetchPrice);
+router.get('/fetch-price/:stock_id', tradingController.fetchStockPrice);
+router.get('/fetch-prices', tradingController.fetchStockPrices);
 
 router.get('/wallet/:user_id', tradingController.walletBalance);
 router.post('/wallet/topup', tradingController.topUp);

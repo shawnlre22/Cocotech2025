@@ -36,6 +36,47 @@ const fetchStockData = async (symbol) => {
   }
 };
 
+export const fetchStockPrice = async(req, res) => {
+  try {
+    const { stock_id } = req.params;
+    const result = await fetchStockData(stock_id);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export const fetchStockPrices = async(req, res) => {
+  try {
+    const stock_ids_res  = await tradingService.getAllStocks();
+    const stock_ids = []
+    stock_ids_res.result.map(obj => stock_ids.push(obj.id))
+
+
+    const stockData = {};
+
+    const promises = stock_ids.map(async stock_id => {
+      try {
+        const result = await fetchStockData(stock_id);
+        return { stock_id, result };
+      } catch (error) {
+        console.error(`Error fetching data for stock_id ${stock_id}:`, error);
+        return { stock_id, result: null };
+      }
+    });
+
+    const results = await Promise.all(promises);
+    results.forEach(({ stock_id, result }) => {
+      stockData[stock_id] = result;
+    });
+
+
+    res.status(200).json({result:stockData});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export const buy = async (req, res) => {
     try {
         const body = req.body;
@@ -56,8 +97,7 @@ export const buy = async (req, res) => {
          throw new Error("Insufficient wallet balance");
         }
 
-        //TODO: placeholder or stub only, fetch by finance api!!!!!!
-        const new_unit_stock_price = 1.0; 
+        const new_unit_stock_price = await fetchStockData(stock_id); 
 
         const new_units_of_stock = body.total_price / new_unit_stock_price;
 
@@ -84,9 +124,7 @@ export const sell = async (req, res) => {
         const user_id = body.user_id;
         const stock_id = body.stock_id;
 
-
-        //TODO: placeholder or stub only, fetch by finance api!!!!!!
-        const new_unit_stock_price = 1.0; 
+        const new_unit_stock_price = await fetchStockData(stock_id); 
 
         //TODO: check current holdings!!!!!
         const units_of_stock = body.units_of_stock;

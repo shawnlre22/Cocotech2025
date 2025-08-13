@@ -41,20 +41,22 @@ export const BuySellForm = () => {
       async function fetchData() {
         try {
           //fetch stock price also
-          const [stockIdsRes,walletBalanceRes, stockBalancesRes] =  await Promise.all([
+          const [stockIdsRes,walletBalanceRes, stockBalancesRes, stockPricesRes] =  await Promise.all([
             fetch("http://localhost:3001/trading/stocks"),
             fetch("http://localhost:3001/trading/wallet/1"),
             fetch("http://localhost:3001/trading/stock_balances/1"),
+            fetch("http://localhost:3001/trading/fetch-prices")
           ]);
 
-          if (!stockIdsRes.ok || !walletBalanceRes.ok || !stockBalancesRes.ok) {
+          if (!stockIdsRes.ok || !walletBalanceRes.ok || !stockBalancesRes.ok || !stockPricesRes.ok) {
             throw new Error("One of the requests failed");
           }
 
-          const [stockIdJson, walletBalanceJson, stockBalancesJson] = await Promise.all([
+          const [stockIdJson, walletBalanceJson, stockBalancesJson, stockPricesJson] = await Promise.all([
             stockIdsRes.json(),
             walletBalanceRes.json(),
-            stockBalancesRes.json()
+            stockBalancesRes.json(),
+            stockPricesRes.json()
           ]);
 
 
@@ -65,7 +67,7 @@ export const BuySellForm = () => {
             stockIdJson.result.map(obj => tmpList.push(obj.id))
             setStockIds(tmpList)
             setStockId(stockIdJson.result[0].id)
-            console.log(tmpList)
+            
           }
 
           //walletBalance
@@ -89,6 +91,10 @@ export const BuySellForm = () => {
           const unit_stock_price = {AAPL: 1.00, TSLA: 1.50}
           setUnitStockPrices(unit_stock_price)
 
+           if (stockPricesJson) {
+            console.log(stockPricesJson.result)
+            setUnitStockPrices(stockPricesJson.result)
+          }
 
         } catch (err) {
           console.error("Error fetching data:", err);
