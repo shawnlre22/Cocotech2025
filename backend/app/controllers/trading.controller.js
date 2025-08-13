@@ -105,6 +105,24 @@ export const walletBalance = async (req, res) => {
 
 }
 
+//modify wallet depending on top up/cash out
+export const modifyWalletBalance = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    const { change } = req.body; // positive for Top Up, negative for Cash Out
+
+    if (!change || isNaN(change)) {
+      return res.status(400).json({ error: "Invalid change amount" });
+    }
+
+    const result = await tradingService.updateWalletBalance(user_id, change);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 export const stockBalance = async (req, res) => {
     try {

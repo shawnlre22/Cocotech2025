@@ -1,10 +1,10 @@
 
 import './App.css';
 import { BuySellForm } from './pages/BuySellForm';
+import { Wallet} from './pages/Wallet';
 import TestApi from './pages/TestApi'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'
-
 
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
 							</p>
 						</>
 						} />
-					<Route path="/wallet" element={<TestApi></TestApi>
+					<Route path="/wallet" element={<Wallet/>
 						} />
 					<Route path="/tradingform" element={<BuySellForm />
 						} />
