@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from "react-bootstrap/InputGroup";
+import axios from 'axios'
 
 //TODO: 1. fetch stocks price
 // 2. submit form call api and handle error
@@ -70,7 +71,7 @@ export const BuySellForm = () => {
           //walletBalance
           if (walletBalanceJson.result) {
             console.log(walletBalanceJson.result.balance)
-            setWalletBalance(walletBalanceJson.result.balance)
+            setWalletBalance(Number(walletBalanceJson.result.balance))
           } 
 
           //stockBalances
@@ -79,7 +80,7 @@ export const BuySellForm = () => {
             const tmpMap = {}
 
             stockBalancesJson.result.forEach(obj => {
-              tmpMap[obj.stock_id] = obj.net_units;
+              tmpMap[obj.stock_id] = Number(obj.net_units);
             })
             console.log(tmpMap)
             setStockBalances(tmpMap)
@@ -103,25 +104,86 @@ export const BuySellForm = () => {
 
 
     React.useEffect( () => {
-      if (lastChanged==="units")
-        setTotalPrice(Number.parseFloat(unitsOfStock * unitStockPrices[stockId]).toFixed(2) ?? null)
+      if (lastChanged==="units") {
+        const tmp = Number.parseFloat(unitsOfStock * unitStockPrices[stockId]).toFixed(2)
+        setTotalPrice(Number(tmp) ?? null)
+      }
     }, [unitsOfStock,stockId, lastChanged])
 
     React.useEffect( () => {
-      if (lastChanged==="total")
-      setUnitsOfStock(Number.parseFloat(totalPrice / unitStockPrices[stockId]).toFixed(2) ?? null)
+      if (lastChanged==="total") {
+        const tmp = Number.parseFloat(totalPrice / unitStockPrices[stockId]).toFixed(2)
+      setUnitsOfStock(Number(tmp) ?? null)
+      }
     }, [totalPrice,stockId, lastChanged])
     
 
     React.useEffect( () => {
+      //console.log(totalPrice, walletBalance, totalPrice<=walletBalance, typeof totalPrice, typeof walletBalance)
+      //console.log(unitsOfStock,stockBalances[stockId], unitsOfStock<=stockBalances[stockId],
+      //  typeof unitsOfStock, typeof stockBalances[stockId])
+      
       if (isBuy) {
         setIsValid(unitStockPrices[stockId] && (totalPrice<=walletBalance??false))
       } else {
         setIsValid(unitStockPrices[stockId] && (unitsOfStock<=stockBalances[stockId]??false))
       }
-    },[totalPrice,unitsOfStock, stockId,isBuy])
+    },[totalPrice, unitsOfStock, stockId,isBuy])
+
+
+
+
+  
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      setIsValid(false);
+      const base_url = "http://localhost:3001/trading/" + (isBuy ? "buy" : "sell");
+      const init = { method: 'POST', accept: 'application/json', body: JSON.stringify({
+        user_id: userId,
+        stock_id: stockId,
+        total_price: totalPrice,
+        units_of_stock: unitsOfStock
+      }) };
+      /*
+
+      console.log(init)
+
     
-      //Number.parseFloat(totalPrice / unitStockPrices[stockId]).toFixed(2)
+        fetch(`${base_url}`, init)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${response.message || 'Unknown error'}`);
+              }
+              return response.json()})
+            .then(d => {
+                alert(d);
+            })
+            .catch(err => {
+              console.error("Fetch error:", err);
+            })
+            .finally(() => {
+              setIsValid(true);
+            })
+              */
+
+        axios.post(base_url, {
+          user_id: userId,
+          stock_id: stockId,
+          total_price: totalPrice,
+          units_of_stock: unitsOfStock
+        }).then(d => {
+                alert(d.data.message);
+            })
+            .catch(err => {
+              console.error("Fetch error:", err);
+            })
+            .finally(() => {
+              window.location.reload();
+            })
+    }
+
+
     return (
     <Form id="buy_sell_form">
       <Form.Group className="mb-3" controlId="formIsBuySell">
@@ -158,7 +220,7 @@ export const BuySellForm = () => {
         <Form.Label >Wallet Balance</Form.Label>
         <InputGroup>
         <InputGroup.Text>$</InputGroup.Text>
-        <Form.Control  placeholder={walletBalance} />
+        <Form.Control  placeholder={Number(walletBalance).toFixed(2)} />
         </InputGroup>
       </Form.Group>
       </fieldset>
@@ -169,7 +231,7 @@ export const BuySellForm = () => {
       <fieldset disabled>
       <Form.Group className="mb-3" controlId="formWalletBalance">
         <Form.Label >Stock Balance in Units</Form.Label>
-        <Form.Control  placeholder={stockBalances[stockId] ?? 0.00} />
+        <Form.Control  placeholder={stockBalances[stockId] ? Number(stockBalances[stockId]).toFixed(2) : '0.00'} />
       </Form.Group>
       </fieldset>
       }
@@ -192,6 +254,9 @@ export const BuySellForm = () => {
             const value = e.target.value;
             if (!/^\d+(\.\d{1,2})?$/.test(value) && value !== '') {
               e.target.value = value.slice(0, -1); // remove last char
+            } 
+            while (e.target.value.length > 1 && e.target.value[0]==='0') {
+              e.target.value = e.target.value.slice(1)
             } 
             setUnitsOfStock(Number(e.target.value));
             setLastChanged("units")
@@ -218,6 +283,9 @@ export const BuySellForm = () => {
             if (!/^\d+(\.\d{1,2})?$/.test(value) && value !== '') {
               e.target.value = value.slice(0, -1); // remove last char
             } 
+            while (e.target.value.length > 1 && e.target.value[0]==='0') {
+              e.target.value = e.target.value.slice(1)
+            } 
             setTotalPrice(Number(e.target.value));
             setLastChanged("total")
           }}
@@ -234,7 +302,10 @@ export const BuySellForm = () => {
         </p> 
       }
       
-      <Button disabled={!isValid}>{isBuy ? "BUY" : "SELL"}</Button>
+      <Button disabled={!isValid}
+      onClick={handleSubmit}
+      
+      >{isBuy ? "BUY" : "SELL"}</Button>
 
     </Form>
 

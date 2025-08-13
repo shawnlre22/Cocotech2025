@@ -10,14 +10,20 @@ export const buy = async (req, res) => {
         const body = req.body;
         const is_buy = 1;
 
-        //TODO: check wallet_amt > transaction amt
-
-
+       
         const user_id = body.user_id;
         const stock_id = body.stock_id;
 
+        //check wallet current balance
+        const resultjson = await tradingService.calculateWalletBalance(user_id);
+        const walletBalance = resultjson.result.balance;
+
         //capped by the total price!
         const total_price = body.total_price;
+
+        if (!floatLessThanOrEqual(total_price, walletBalance)) {
+         throw new Error("Insufficient wallet balance");
+        }
 
         //TODO: placeholder or stub only, fetch by finance api!!!!!!
         const new_unit_stock_price = 1.0; 
@@ -27,6 +33,7 @@ export const buy = async (req, res) => {
         const result = await tradingService.buy(user_id, stock_id, new_unit_stock_price, new_units_of_stock, total_price, is_buy);
         res.status(201).json(result);
     } catch (error) {
+      console.log(error.message)
         res.status(500).json({ error: error.message });
     }
 }
@@ -53,6 +60,14 @@ export const sell = async (req, res) => {
         //TODO: check current holdings!!!!!
         const units_of_stock = body.units_of_stock;
         const total_price = new_unit_stock_price * units_of_stock;
+
+        //check wallet current balance
+        const resultjson = await tradingService.calculateStockBalance(user_id,stock_id);
+        const stockBalance = resultjson.result.net_units;
+
+        if (!floatLessThanOrEqual(units_of_stock, stockBalance)) {
+         throw new Error("Insufficient stock balance");
+        }
 
 
         const result = await tradingService.buy(user_id, stock_id, new_unit_stock_price, units_of_stock, total_price, is_buy);
