@@ -27,7 +27,7 @@ VALUES
             unit_stock_price,
             txn_time: sqlDateTime,
             is_buy,
-            message: `Stock ${is_buy ? "buy" : "sell"} Success` };
+            message: `${is_buy ? "BUY" : "SELL"} Success!` };
     } catch (error) {
         console.error('Error buying stock', error);
         throw error;
