@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
-export const Wallet = () => {
+const Wallet = () => {
   const [isBuy, setIsBuy] = useState(1); // 1: Top Up, 0: Cash Out
   const [walletBalance, setWalletBalance] = useState(0);
   const [amount, setAmount] = useState("");
@@ -120,3 +120,4 @@ export const Wallet = () => {
     </Form>
   );
 };
+export default Wallet
