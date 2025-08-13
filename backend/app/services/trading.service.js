@@ -27,7 +27,7 @@ VALUES
             unit_stock_price,
             txn_time: sqlDateTime,
             is_buy,
-            message: `Stock ${is_buy ? "buy" : "sell"} Success` };
+            message: `${is_buy ? "BUY" : "SELL"} Success!` };
     } catch (error) {
         console.error('Error buying stock', error);
         throw error;
@@ -49,6 +49,38 @@ export const calculateWalletBalance = async (user_id) => {
     }      
 }
 
+//update Wallet balance from top up/cash out
+export const updateWalletBalance = async (user_id, change) => {
+  try {
+    await connection.query(
+      `UPDATE user_wallet_balance 
+       SET current_balance = current_balance + ? 
+       WHERE user_id = ?`,
+      [change, user_id]
+    );
+
+    // Return the updated balance
+    return calculateWalletBalance(user_id);
+  } catch (error) {
+    console.error('Error updating wallet balance', error);
+    throw error;
+  }
+};
+
+//GET
+export const calculateStockBalances = async(user_id) => {
+  try {
+      const result = await connection.query(` SELECT *  
+        FROM active_trades WHERE user_id = ?`,
+        [user_id]);
+
+      return {result: result[0]};
+    }
+    catch (error) {
+        console.error('Error calculating wallet balance', error);
+        throw error;
+    } 
+}
 
 //GET
 export const calculateStockBalance = async (user_id,stock_id) => {
@@ -91,4 +123,16 @@ VALUES
         console.error('Error Top Up or Cash Out', error);
         throw error;
     }       
+}
+
+
+export const getAllStocks = async () => {
+  try {
+  const query = `SELECT * FROM stocks`
+  const result = await connection.query(query);
+  return {result: result[0]};
+  } catch (error) {
+    console.error('Error getting all stocks', error);
+    throw error;
+  }
 }

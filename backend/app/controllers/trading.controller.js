@@ -1,69 +1,110 @@
 import * as tradingService from '../services/trading.service.js';
 import axios from 'axios';
+/*
+userid, stockid
+fetch price,
+execute
+*/
+
 
 /**
  * Fetch stock data from Yahoo Finance
  * @param {string} symbol - The stock symbol (e.g., "AAPL" for Apple)
  * @returns {Promise<Object>} - The stock data
  */
+
+
 const fetchStockData = async (symbol) => {
-    try {  
-        const start_time = Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 8); // 8 days ago
-        const end_time = Math.floor(Date.now() / 1000); // now
-        const interval = '1m'; 
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}` +
-        `&period1=${start_time}&period2=${end_time}&interval=${interval}&` +
-        `includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&` +
-        `region=US&crumb=t5QZMhgytYZ&corsDomain=finance.yahoo.com`;
-//console.log(`Fetching stock data from: ${url}`);
+  try {  
+      const now = Math.floor(Date.now() / 1000); // current Unix timestamp
+      const oneDayAgo = now - 24 * 60 * 60;      // 1 day ago
 
-        const response = await axios.get(url);
-        //console.log(response.data.chart.result);
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?` +
+      `symbol=${symbol}&period1=${oneDayAgo}&period2=${now}&interval=1m&` +
+      `includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&region=US`;
+      const response = await axios.get(url);
 
-        if (response.data && response.data.chart && response.data.chart.result.length > 0) {
-          const result = response.data.chart.result[0]["meta"]["regularMarketPrice"];
-          //const quote = result.indicators.quote[0]; // Access the first quote array
-          console.log(result); // Log the quote data for debugging
-          return result;
-        } else {
-            throw new Error('No data found for the given symbol');
-        }
-    } catch (error) {
-        console.error(`Error fetching stock data for ${symbol}:`, error.message);
-        throw error;
-    }
+      if (response.data && response.data.chart && response.data.chart.result.length > 0) {
+          const regMarket = response.data.chart.result[0]["meta"]["previousClose"];
+          return regMarket;
+      } else {
+          throw new Error('No data found for the given symbol');
+      }
+  } catch (error) {
+      console.error(`Error fetching stock data for ${symbol}:`, error.message);
+      throw error;
+  }
 };
 
+export const fetchStockPrice = async(req, res) => {
+  try {
+    const { stock_id } = req.params;
+    const result = await fetchStockData(stock_id);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
-fetchStockData("NVDA")
+export const fetchStockPrices = async(req, res) => {
+  try {
+    const stock_ids_res  = await tradingService.getAllStocks();
+    const stock_ids = []
+    stock_ids_res.result.map(obj => stock_ids.push(obj.id))
 
-/*
-userid, stockid
-fetch price,
-execute
-*/
+
+    const stockData = {};
+
+    const promises = stock_ids.map(async stock_id => {
+      try {
+        const result = await fetchStockData(stock_id);
+        return { stock_id, result };
+      } catch (error) {
+        console.error(`Error fetching data for stock_id ${stock_id}:`, error);
+        return { stock_id, result: null };
+      }
+    });
+
+    const results = await Promise.all(promises);
+    results.forEach(({ stock_id, result }) => {
+      stockData[stock_id] = result;
+    });
+
+
+    res.status(200).json({result:stockData});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export const buy = async (req, res) => {
     try {
         const body = req.body;
         const is_buy = 1;
 
-        //TODO: check wallet_amt > transaction amt
-
-
+       
         const user_id = body.user_id;
         const stock_id = body.stock_id;
+
+        //check wallet current balance
+        const resultjson = await tradingService.calculateWalletBalance(user_id);
+        const walletBalance = resultjson.result.balance;
 
         //capped by the total price!
         const total_price = body.total_price;
 
-        //TODO: placeholder or stub only, fetch by finance api!!!!!!
-        const new_unit_stock_price = 1.0; 
+        if (!floatLessThanOrEqual(total_price, walletBalance)) {
+         throw new Error("Insufficient wallet balance");
+        }
+
+        const new_unit_stock_price = await fetchStockData(stock_id); 
 
         const new_units_of_stock = body.total_price / new_unit_stock_price;
 
         const result = await tradingService.buy(user_id, stock_id, new_unit_stock_price, new_units_of_stock, total_price, is_buy);
         res.status(201).json(result);
     } catch (error) {
+      console.log(error.message)
         res.status(500).json({ error: error.message });
     }
 }
@@ -83,13 +124,19 @@ export const sell = async (req, res) => {
         const user_id = body.user_id;
         const stock_id = body.stock_id;
 
-
-        //TODO: placeholder or stub only, fetch by finance api!!!!!!
-        const new_unit_stock_price = 1.0; 
+        const new_unit_stock_price = await fetchStockData(stock_id); 
 
         //TODO: check current holdings!!!!!
         const units_of_stock = body.units_of_stock;
         const total_price = new_unit_stock_price * units_of_stock;
+
+        //check wallet current balance
+        const resultjson = await tradingService.calculateStockBalance(user_id,stock_id);
+        const stockBalance = resultjson.result.net_units;
+
+        if (!floatLessThanOrEqual(units_of_stock, stockBalance)) {
+         throw new Error("Insufficient stock balance");
+        }
 
 
         const result = await tradingService.buy(user_id, stock_id, new_unit_stock_price, units_of_stock, total_price, is_buy);
@@ -111,6 +158,35 @@ export const walletBalance = async (req, res) => {
 
 }
 
+//modify wallet depending on top up/cash out
+export const modifyWalletBalance = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    const { change } = req.body; // positive for Top Up, negative for Cash Out
+
+    if (!change || isNaN(change)) {
+      return res.status(400).json({ error: "Invalid change amount" });
+    }
+
+    const result = await tradingService.updateWalletBalance(user_id, change);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const stockBalances = async(req, res) => {
+  try {
+      const { user_id } = req.params;
+
+      const result = await tradingService.calculateStockBalances(user_id);
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 
 export const stockBalance = async (req, res) => {
     try {
@@ -161,4 +237,15 @@ export const cashOut = async (req, res) => {
 
 function floatLessThanOrEqual(a, b, epsilon = 1e-10) {
   return a < b || Math.abs(a - b) < epsilon;
+}
+
+export const getAllStocks = async (req, res) => {
+  try {
+    const result = await tradingService.getAllStocks();
+   
+      res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+  
 }
