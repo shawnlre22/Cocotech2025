@@ -4,9 +4,9 @@ import { BuySellForm } from './pages/BuySellForm';
 import TestApi from './pages/TestApi'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Trading from './pages/Trading';
-import Wallet from './pages/Wallet';
 import Home from './pages/Home';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Wallet from './pages/Wallet';
 
 function App() {
   return (

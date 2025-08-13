@@ -49,6 +49,23 @@ export const calculateWalletBalance = async (user_id) => {
     }      
 }
 
+//update Wallet balance from top up/cash out
+export const updateWalletBalance = async (user_id, change) => {
+  try {
+    await connection.query(
+      `UPDATE user_wallet_balance 
+       SET current_balance = current_balance + ? 
+       WHERE user_id = ?`,
+      [change, user_id]
+    );
+
+    // Return the updated balance
+    return calculateWalletBalance(user_id);
+  } catch (error) {
+    console.error('Error updating wallet balance', error);
+    throw error;
+  }
+};
 
 //GET
 export const calculateStockBalances = async(user_id) => {
