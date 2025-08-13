@@ -130,9 +130,9 @@ export const BuySellForm = () => {
       //  typeof unitsOfStock, typeof stockBalances[stockId])
       
       if (isBuy) {
-        setIsValid(unitStockPrices[stockId] && (totalPrice<=walletBalance??false))
+        setIsValid(unitStockPrices[stockId] && (totalPrice<=walletBalance??false) && totalPrice>0 && unitsOfStock>0)
       } else {
-        setIsValid(unitStockPrices[stockId] && (unitsOfStock<=stockBalances[stockId]??false))
+        setIsValid(unitStockPrices[stockId] && (unitsOfStock<=stockBalances[stockId]??false) && totalPrice>0 && unitsOfStock>0)
       }
     },[totalPrice, unitsOfStock, stockId,isBuy])
 
@@ -144,6 +144,8 @@ export const BuySellForm = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
       setIsValid(false);
+      setLoading(true);
+      console.log(isValid,loading, )
       const base_url = "http://localhost:3001/trading/" + (isBuy ? "buy" : "sell");
       const init = { method: 'POST', accept: 'application/json', body: JSON.stringify({
         user_id: userId,
@@ -261,7 +263,7 @@ export const BuySellForm = () => {
             if (!/^\d+(\.\d{1,2})?$/.test(value) && value !== '') {
               e.target.value = value.slice(0, -1); // remove last char
             } 
-            while (e.target.value.length > 1 && e.target.value[0]==='0') {
+            while (e.target.value.length > 1 && e.target.value[0]==='0'&& e.target.value[1] !=='.') {
               e.target.value = e.target.value.slice(1)
             } 
             setUnitsOfStock(Number(e.target.value));
@@ -289,7 +291,7 @@ export const BuySellForm = () => {
             if (!/^\d+(\.\d{1,2})?$/.test(value) && value !== '') {
               e.target.value = value.slice(0, -1); // remove last char
             } 
-            while (e.target.value.length > 1 && e.target.value[0]==='0') {
+            while (e.target.value.length > 1 && e.target.value[0]==='0' && e.target.value[1] !=='.') {
               e.target.value = e.target.value.slice(1)
             } 
             setTotalPrice(Number(e.target.value));
@@ -300,15 +302,15 @@ export const BuySellForm = () => {
         </InputGroup>
       </Form.Group>
 
-      {!isValid &&
+      {(!isValid && !loading )&&
         <p style={{ color: 'red' }}>
           Insufficient
           {isBuy ? " Wallet ": " Stock "}
-          Balance, or invalid unit stock price
+          Balance, or invalid units of stock/amount of money
         </p> 
       }
       
-      <Button disabled={!isValid}
+      <Button disabled={!isValid || loading}
       onClick={handleSubmit}
       
       >{isBuy ? "BUY" : "SELL"}</Button>
