@@ -3,36 +3,24 @@ import './App.css';
 import { BuySellForm } from './pages/BuySellForm';
 import TestApi from './pages/TestApi'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'
-
-
+import Trading from './pages/Trading';
+import Wallet from './pages/Wallet';
+import Home from './pages/Home';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
     <BrowserRouter>
 				<Routes>
-					<Route path="/" element={
-						<>
-							<p>
-								Home
-							</p>
-
-						</>
-						}></Route>
-					<Route path="/trading" element={
-						<>
-							<p>
-								Trading
-							</p>
-						</>
-						} />
-					<Route path="/wallet" element={<TestApi></TestApi>
-						} />
+					<Route path="/" element={<Home />}></Route>
+					<Route path="/trading" element={<Trading />}></Route>
+					<Route path="/wallet" element={<Wallet />}></Route>
 					<Route path="/tradingform" element={<BuySellForm />
 						} />
             
+
 				</Routes>
-      </BrowserRouter>
+    </BrowserRouter>
 	
 
   )
