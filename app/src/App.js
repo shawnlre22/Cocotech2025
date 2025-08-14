@@ -7,6 +7,7 @@ import Trading from './pages/Trading';
 
 import Home from './pages/Home';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import TradeHistory from './pages/TradeHistory';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
 					<Route path="/" element={<Home />}></Route>
 					<Route path="/trading" element={<Trading />}></Route>
 					<Route path="/buysell" element={<BuySellForm />}></Route>
+					<Route path="/tradehistory" element={<TradeHistory />}></Route>
 
 				</Routes>
     </BrowserRouter>

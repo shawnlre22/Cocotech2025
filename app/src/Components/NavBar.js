@@ -14,6 +14,7 @@ function NavBar() {
           <Nav className="me-auto">
             <Nav.Link href="trading">Trading</Nav.Link>
             <Nav.Link href="buysell">BuySell</Nav.Link>
+            <Nav.Link href="tradehistory">History</Nav.Link>
             <NavDropdown title="Profile" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">My account</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">
