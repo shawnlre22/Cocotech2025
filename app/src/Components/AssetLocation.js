@@ -7,7 +7,7 @@ const AssetLocation = ({ data }) => {
 
     return (
         <div className="asset-location-chart">
-          <h3>Asset Allocation</h3>
+          <h3>Asset Allocation in Market Value</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie

@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from "react-bootstrap/InputGroup";
 import axios from 'axios'
+import { BrowserRouter as  useLocation } from 'react-router-dom';
 import './BuySell.css';
 
 //TODO: 1. fetch stocks price
@@ -34,9 +35,14 @@ export const BuySellForm = () => {
     //form assistance
     const [lastChanged, setLastChanged] = useState("");
     const [isValid, setIsValid] = useState(true);
+    
 
 
-
+    //const location = useLocation();
+    const queryParams = new URLSearchParams(window.location.search); // Parse query string
+    
+    const stockIdQuery = queryParams.get('stock_id');
+    const isBuyQuery = queryParams.get('is_buy');
 
   
 
@@ -69,7 +75,14 @@ export const BuySellForm = () => {
             const tmpList = []
             stockIdJson.result.map(obj => tmpList.push(obj.id))
             setStockIds(tmpList)
-            setStockId(stockIdJson.result[0].id)
+             //setStockId(stockIdJson.result[0].id)
+            
+            if (stockIdQuery) {
+              setStockId(stockIdQuery)
+            } else {
+              setStockId(stockIdJson.result[0].id)
+            }
+              
             
           }
 
@@ -87,7 +100,6 @@ export const BuySellForm = () => {
             stockBalancesJson.result.forEach(obj => {
               tmpMap[obj.stock_id] = Number(obj.net_units);
             })
-            console.log(tmpMap)
             setStockBalances(tmpMap)
           } 
 
@@ -102,6 +114,12 @@ export const BuySellForm = () => {
         } catch (err) {
           console.error("Error fetching data:", err);
         } finally {
+          
+          if (isBuyQuery) {
+            console.log(isBuyQuery)
+            setIsBuy(Number(isBuyQuery))
+          }
+            
           setLoading(false);
         }
         
@@ -203,16 +221,17 @@ export const BuySellForm = () => {
     <Form id="buy_sell_form">
 
               {/* Buy/Sell Toggle */}
+              <Form.Label>Action</Form.Label>
               <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                 <Button
-                  className={isBuy ? "btn-buy" : "btn-inactive"} // green when active
+                  className={isBuy ? "btn-buy0" : "btn-inactive"} // green when active
                   onClick={() => setIsBuy(1)}
                   style={{ flex: 1 }}
                 >
                   Buy
                 </Button>
                 <Button
-                  className={!isBuy ? "btn-sell" : "btn-inactive"} // red when active
+                  className={!isBuy ? "btn-sell0" : "btn-inactive"} // red when active
                   onClick={() => setIsBuy(0)}
                   style={{ flex: 1 }}
                 >
@@ -321,7 +340,8 @@ export const BuySellForm = () => {
         </InputGroup>
       </Form.Group>
 
-      {(!isValid && !loading )&&
+
+      {(!isValid && !loading )&& (unitsOfStock!==0 && totalPrice!==0) &&
         <p style={{ color: 'red' }}>
           Insufficient
           {isBuy ? " Wallet ": " Stock "}
@@ -334,7 +354,7 @@ export const BuySellForm = () => {
         disabled={!isValid || loading}
         onClick={handleSubmit}
       >
-        {isBuy ? "BUY" : "SELL"}
+        Confirm {isBuy ? "BUY" : "SELL"}
       </Button>
 
     </Form>

@@ -8,6 +8,7 @@ import Wallet from './pages/Wallet';
 
 import Home from './pages/Home';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import TradeHistory from './pages/TradeHistory';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
 					<Route path="/wallet" element={<Wallet />}></Route>
 
 					<Route path="/buysell" element={<BuySellForm />}></Route>
+					<Route path="/tradehistory" element={<TradeHistory />}></Route>
 
 				
             
