@@ -2,11 +2,10 @@ CREATE DATABASE IF NOT EXISTS `cocotech1`;
 
 USE `cocotech1`; 
 
-DROP TABLE IF EXISTS `stocks`;
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `wallets`;
 DROP TABLE IF EXISTS `txn_history`;
-
+DROP TABLE IF EXISTS `wallets`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `stocks`;
 
 CREATE TABLE IF NOT EXISTS `stocks` (
   `id` varchar(20) NOT NULL,
