@@ -124,7 +124,7 @@ React.useEffect(() => {
               tmp = tmp + Number(obj.cost)
             })
             console.log(tmp)
-              tmpCardsData.push({title: "Total Invested Value", data: tmp})
+              tmpCardsData.push({id:'2', title: "Total Invested Value", data: tmp})
           }
 
           if(investedAmtJson.result) {
@@ -257,12 +257,13 @@ return (
                 </Col>
     
                 <Col>
-                  <div className="mb-3">
+                  
+                  <Form.Group>
+                  <Form.Label>
                     <strong>
                       Wallet Balance: ${walletBalance.toLocaleString()}
                     </strong>
-                  </div>
-                  <Form.Group>
+                  </Form.Label>
                     <Form.Control
                       type="number"
                       step="0.01"
@@ -291,18 +292,24 @@ return (
                 </Col>
     
                 <Col  className="d-flex justify-content-center align-items-center" style={{ height: "100%" }}>
+                  <Form.Group>
+                 <Form.Label>
+                   
+                  </Form.Label>
                   <Button
                     type="submit"
                     className="mt-3"
                     style={{
                       backgroundColor: currentColor,
                       borderColor: currentColor,
-                      color: "black", // keep text readable
+                      color: "white", // keep text readable
+
                     }}
                     disabled={isCashOutInvalid || !amount}
                   >
                     {isBuy === 1 ? "Top Up" : "Cash Out"}
                   </Button>
+                  </Form.Group>
                 </Col>
               </Row>
             </Form>
