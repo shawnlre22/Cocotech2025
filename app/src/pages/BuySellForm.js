@@ -1,9 +1,12 @@
+import NavBar from '../Components/NavBar';
+import Container from 'react-bootstrap/esm/Container';
 import React, { useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from "react-bootstrap/InputGroup";
 import axios from 'axios'
 import { BrowserRouter as  useLocation } from 'react-router-dom';
+import './BuySell.css';
 
 //TODO: 1. fetch stocks price
 // 2. submit form call api and handle error
@@ -32,6 +35,7 @@ export const BuySellForm = () => {
     //form assistance
     const [lastChanged, setLastChanged] = useState("");
     const [isValid, setIsValid] = useState(true);
+    
 
 
     //const location = useLocation();
@@ -210,15 +214,32 @@ export const BuySellForm = () => {
 
 
     return (
+    <>
+      <NavBar></NavBar>
+      <Container>
+      <br></br>
     <Form id="buy_sell_form">
-      <Form.Group className="mb-3" controlId="formIsBuySell">
-        <Form.Label>Buy or Sell</Form.Label>
-        <Form.Select aria-label="Default select example" value={isBuy}
-        onChange={ e => {console.log(e.target.value);setIsBuy(Number(e.target.value))}}>
-          <option value="1">Buy</option>
-          <option value="0">Sell</option>
-        </Form.Select>
-      </Form.Group>
+
+              {/* Buy/Sell Toggle */}
+              <Form.Label>Action</Form.Label>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                <Button
+                  className={isBuy ? "btn-buy0" : "btn-inactive"} // green when active
+                  onClick={() => setIsBuy(1)}
+                  style={{ flex: 1 }}
+                >
+                  Buy
+                </Button>
+                <Button
+                  className={!isBuy ? "btn-sell0" : "btn-inactive"} // red when active
+                  onClick={() => setIsBuy(0)}
+                  style={{ flex: 1 }}
+                >
+                  Sell
+                </Button>
+              </div>
+
+    
 
       <Form.Group className="mb-3" controlId="formStockId">
         <Form.Label>Stock</Form.Label>
@@ -231,7 +252,7 @@ export const BuySellForm = () => {
 
       <fieldset disabled>
       <Form.Group className="mb-3" controlId="formUnitStockPrice">
-        <Form.Label >Unit Stock Price</Form.Label>
+        <Form.Label >Price per Unit</Form.Label>
         <InputGroup>
         <InputGroup.Text>$</InputGroup.Text>
         <Form.Control  placeholder={unitStockPrices[stockId] ?? "ERROR"} />
@@ -265,7 +286,7 @@ export const BuySellForm = () => {
     
 
       <Form.Group className="mb-3">
-        <Form.Label >Units of stocks to {isBuy? "BUY" : "SELL (Transaction will be executed according to this number)"}</Form.Label>
+        <Form.Label >Units to {isBuy? "Buy" : "Sell (Transaction will be executed according to this number)"}</Form.Label>
         <Form.Control
           type="number"
           step="0.01"
@@ -291,7 +312,7 @@ export const BuySellForm = () => {
 
 
       <Form.Group className="mb-3">
-      <Form.Label >Total Amount of Money to {isBuy? "BUY (Transaction will be executed according to this number)" : "SELL"}</Form.Label>
+      <Form.Label >Total Amount to {isBuy? "Buy (Transaction will be executed according to this number)" : "Sell"}</Form.Label>
         <InputGroup>
         <InputGroup.Text>$</InputGroup.Text>
         <Form.Control
@@ -319,7 +340,8 @@ export const BuySellForm = () => {
         </InputGroup>
       </Form.Group>
 
-      {(!isValid && !loading )&&
+
+      {(!isValid && !loading )&& (unitsOfStock!==0 && totalPrice!==0) &&
         <p style={{ color: 'red' }}>
           Insufficient
           {isBuy ? " Wallet ": " Stock "}
@@ -327,14 +349,17 @@ export const BuySellForm = () => {
         </p> 
       }
       
-      <Button disabled={!isValid || loading}
-      onClick={handleSubmit}
-      
-      >{isBuy ? "BUY" : "SELL"}</Button>
+      <Button
+        className={isBuy ? "btn-buy" : "btn-sell"} // Apply dynamic class
+        disabled={!isValid || loading}
+        onClick={handleSubmit}
+      >
+        Confirm {isBuy ? "BUY" : "SELL"}
+      </Button>
 
     </Form>
-
-
+    </Container>
+    </>
     );
 
 
