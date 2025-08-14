@@ -2,6 +2,12 @@ CREATE DATABASE IF NOT EXISTS `cocotech1`;
 
 USE `cocotech1`; 
 
+DROP TABLE IF EXISTS `stocks`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `wallets`;
+DROP TABLE IF EXISTS `txn_history`;
+
+
 CREATE TABLE IF NOT EXISTS `stocks` (
   `id` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
@@ -77,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `txn_history` (
   `stock_id` varchar(10) NOT NULL,
   `units_of_stock` decimal(38,2) NOT NULL,
   `txn_amt` decimal(38,2) NOT NULL,
-  `unit_stock_price` decimal(38,4) NOT NULL,
+  `unit_stock_price` decimal(38,2) NOT NULL,
   `txn_time` varchar(45) NOT NULL,
   `is_buy` bit(1) NOT NULL,
   PRIMARY KEY (`id`),
@@ -144,3 +150,18 @@ FROM (
 ) u
 LEFT JOIN wallet_movements w ON u.id = w.user_id
 LEFT JOIN stock_cashflow s ON u.id = s.user_id;
+
+
+CREATE OR REPLACE VIEW invested_amt AS
+SELECT 
+    user_id,
+    stock_id,
+    SUM(
+        CASE 
+            WHEN is_buy = b'1' THEN txn_amt
+            ELSE 0
+        END
+    ) AS invested_amt
+FROM txn_history
+GROUP BY user_id, stock_id
+HAVING invested_amt <> 0;

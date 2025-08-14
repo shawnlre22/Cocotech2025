@@ -5,6 +5,7 @@ import Container from 'react-bootstrap/esm/Container';
 import DashboardSummary from '../Components/DashboardSummary';
 import ActiveTrades from '../Components/ActiveTrades';
 import AssetLocation from '../Components/AssetLocation';
+import {TotalInvestedAmt} from '../Components/TotalInvestedAmt';
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -24,7 +25,7 @@ const Trading = () => {
 const [cardsData, setCardsData] = useState([])
 const [trades, setTrades] = useState([])
 const [assetData, setAssetData] = useState([])
-
+const [totalInvestedAmt, setTotalInvestedAmt] = useState([])
 
 //2. AT tables
 // stockId, unitsOfStock, unitPrice, Active {buy/sell button}
@@ -34,22 +35,24 @@ React.useEffect(() => {
         try {
           const tmpCardsData = []
           //fetch stock price also
-          const [stockIdsRes, stockBalancesRes, stockPricesRes, investedValRes] =  await Promise.all([
+          const [stockIdsRes, stockBalancesRes, stockPricesRes, investedValRes, investedAmtRes] =  await Promise.all([
             fetch("http://localhost:3001/trading/stocks"),
             fetch("http://localhost:3001/trading/stock_balances/1"),
             fetch("http://localhost:3001/trading/fetch-prices"),
-            fetch("http://localhost:3001/trading/stocksCost/1")
+            fetch("http://localhost:3001/trading/stocksCost/1"),
+            fetch("http://localhost:3001/trading/totalInvestedAmt/1"),
           ]);
 
-          if (!stockIdsRes.ok || !stockBalancesRes.ok || !stockPricesRes.ok || !investedValRes.ok) {
+          if (!stockIdsRes.ok || !stockBalancesRes.ok || !stockPricesRes.ok || !investedValRes.ok || !investedAmtRes.ok) {
             throw new Error("One of the requests failed");
           }
 
-          const [stockIdJson, stockBalancesJson, stockPricesJson, investedValJson] = await Promise.all([
+          const [stockIdJson, stockBalancesJson, stockPricesJson, investedValJson, investedAmtJson] = await Promise.all([
             stockIdsRes.json(),
             stockBalancesRes.json(),
             stockPricesRes.json(),
-            investedValRes.json()
+            investedValRes.json(),
+            investedAmtRes.json()
           ]);
 
 
@@ -123,7 +126,26 @@ React.useEffect(() => {
               tmp = tmp + Number(obj.cost)
             })
             console.log(tmp)
-              tmpCardsData.push({title: "Total Invested Amount", data: tmp})
+              tmpCardsData.push({title: "Total Invested Value", data: tmp})
+          }
+
+          if(investedAmtJson.result) {
+           
+            const resultMap = {};
+
+            investedAmtJson.result.forEach(({ txn_minute, stock_id, invested_amt }) => {
+              const amt = parseFloat(invested_amt);
+              if (!resultMap[txn_minute]) {
+                resultMap[txn_minute] = { txn_minute, total_invested_amt: 0 };
+              }
+              resultMap[txn_minute][stock_id] = amt;
+              resultMap[txn_minute].total_invested_amt += amt;
+            });
+
+            setTotalInvestedAmt(Object.values(resultMap));
+            
+
+
           }
 
            setCardsData(tmpCardsData)
@@ -167,21 +189,36 @@ return (
       })}
     </div>
   </Container>
-  <br></br>
+ 
+    <br></br>
   <Container>
     <Row>
-      <Col sm={8}>
-        <h4>Active Trades</h4>
-        <ActiveTrades trades={trades} />
-
-      </Col>
-      <Col sm={4}>
+    <Col sm={4}>
         <h4>Asset Location</h4>
          {/* Donut chart */}
          <AssetLocation data={assetData} />
       </Col>
+      <Col sm={8}>
+      <h4>Total Invested Amount</h4>
+        <TotalInvestedAmt data={totalInvestedAmt} />
+
+      </Col>
+      
     </Row>
   </Container>
+
+
+   <br></br>
+  <Container>
+    <Row>
+      <Col sm={12}>
+        <h4>Active Trades</h4>
+        <ActiveTrades trades={trades} />
+
+      </Col>
+    </Row>
+  </Container>
+
 </>
 )};
   
