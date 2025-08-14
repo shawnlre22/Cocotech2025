@@ -16,9 +16,6 @@ import Form from "react-bootstrap/Form";
 
 const Trading = () => {
 
-
-
-
 //1. 3 cards
 // totalPV(cal), totalInvestedCost
 //title, data
@@ -113,7 +110,7 @@ React.useEffect(() => {
               tmp1 = tmp1 + stockPricesJson.result[obj.stock_id] * Number(obj.net_units)
             })
 
-            tmpCardsData.push({title: "Total Portfolio Value", data: tmp1})
+            tmpCardsData.push({id:"1", title: "Total Portfolio Value", data: tmp1})
 
           }
 
@@ -124,7 +121,7 @@ React.useEffect(() => {
               tmp = tmp + Number(obj.cost)
             })
             console.log(tmp)
-              tmpCardsData.push({title: "Total Invested Amount", data: tmp})
+              tmpCardsData.push({id:"2",title: "Total Invested Amount", data: tmp})
           }
 
            setCardsData(tmpCardsData)
@@ -290,18 +287,32 @@ return (
   </Container>
 
   <Container>
-    <br></br>
-    <h3>Trading Overview</h3>
-    <div className="CardInfo">
-      
+  <br />
+  <h3>Trading Overview</h3>
+  <div className="CardInfo">
+    {cardsData.map(obj => {
+      let tooltipText = '';
+      console.log(obj);
+      if (obj.id === "1") {
+        tooltipText = 'Sum of Market Value of all owned Stocks';
+      } else if (obj.id === "2") {
+        tooltipText = '(Sum of Cost of Stocks Bought) - (Sum of Value of Stocks Sold)';
+      }
+      console.log(tooltipText)
 
-      {cardsData.map(obj => {
-        return (<div>
-       <DashboardSummary title={obj.title} data={Number(obj.data).toFixed(2)}></DashboardSummary>
-        </div>)
-      })}
-    </div>
-  </Container>
+      return (
+        <div key={obj.title}>
+          <DashboardSummary
+            title={obj.title}
+            data={Number(obj.data).toFixed(2)}
+            tooltipText={tooltipText}
+          />
+        </div>
+      );
+    })}
+  </div>
+</Container>
+
   <br></br>
   <Container>
     <Row>

@@ -26,3 +26,8 @@
     font-weight: bold !important;
     color: #1f1e1e !important;
 }
+
+.dashboard-summary-card {
+    cursor: help; /* shows ? icon on hover */
+  }
+  
