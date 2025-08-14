@@ -17,13 +17,13 @@ const AssetLocation = ({ data }) => {
                 innerRadius={70}
                 outerRadius={100}
                 dataKey="value"
-                label
-              >
+                label={({ value }) => `$${value.toLocaleString()}`} // <-- Custom label
+                >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
