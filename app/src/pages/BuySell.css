@@ -1,0 +1,42 @@
+/* ===== Buy/Sell Form Styling ===== */
+form#buy_sell_form .form-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* General Button Styles */
+  #buy_sell_form .btn {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+    color: white; /* default text color */
+  }
+  
+  /* Buy Button - Active */
+  #buy_sell_form .btn-buy {
+    background-color: #28a745 !important; /* Green */
+  }
+  #buy_sell_form .btn-buy:hover {
+    background-color: #218838 !important; /* Darker green */
+  }
+  
+  /* Sell Button - Active */
+  #buy_sell_form .btn-sell {
+    background-color: #dc3545 !important; /* Red */
+  }
+  #buy_sell_form .btn-sell:hover {
+    background-color: #c82333 !important; /* Darker red */
+  }
+  
+  /* Inactive Button - Grey */
+  #buy_sell_form .btn-inactive {
+    background-color: #6c757d !important; /* Grey */
+  }
+  #buy_sell_form .btn-inactive:hover {
+    background-color: #5a6268 !important; /* Darker grey */
+  }
+  
