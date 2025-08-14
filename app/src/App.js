@@ -1,7 +1,6 @@
 
 import './App.css';
 import { BuySellForm } from './pages/BuySellForm';
-import TestApi from './pages/TestApi'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Trading from './pages/Trading';
 

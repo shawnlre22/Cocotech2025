@@ -23,4 +23,6 @@ router.get('/stocksCost/:user_id', tradingController.getStocksCost)
 
 router.get('/txnHistory/:user_id', tradingController.getTxnHistory)
 
+router.get('/totalInvestedAmt/:user_id', tradingController.totalInvestedAmt)
+
 export default router;

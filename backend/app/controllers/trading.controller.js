@@ -275,3 +275,14 @@ export const getTxnHistory = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const totalInvestedAmt = async(req, res) => {
+    try {
+      const user_id = req.params.user_id;
+      const result = await tradingService.totalInvestedAmt(user_id);
+   
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+}

@@ -164,7 +164,18 @@ export const getTxnHistory = async (user_id) => {
   const result = await connection.query(query,[user_id]);
   return {result: result[0]};
   } catch (error) {
-    console.error('Error getting all stocks', error);
+    console.error('Error getting transaction history', error);
+    throw error;
+  }
+}
+
+export const totalInvestedAmt = async (user_id) => {
+  try {
+  const query = `SELECT * FROM invested_amt WHERE user_id = ?`;
+  const result = await connection.query(query,[user_id]);
+  return {result: result[0]};
+  } catch (error) {
+    console.error('Error getting total invested amount', error);
     throw error;
   }
 }
