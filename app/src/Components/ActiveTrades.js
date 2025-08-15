@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from 'react-bootstrap/Button';
 import './ActiveTrades.css';
 
 const ActiveTrades = ({ trades }) => {
@@ -37,19 +38,25 @@ const ActiveTrades = ({ trades }) => {
                             <td>{trade.unit_price}</td>
 
                             <td>
-                                <button onClick={() =>
+                                <Button 
+                                className="btn-buy"
+                                onClick={() =>
                                     handleBuySellRedirect(trade.stock_id, 1)
                                 }>
                             
                                     BUY
-                                </button>
+                                </Button>
                                 
-                                <button onClick={() =>
+                                <Button 
+                                className="btn-sell"
+                                onClick={() =>
                                     handleBuySellRedirect(trade.stock_id, 0)
                                 }>
                             
                                     SELL
-                                </button>
+                                </Button>
+                                
+                                
 
 
                             </td>

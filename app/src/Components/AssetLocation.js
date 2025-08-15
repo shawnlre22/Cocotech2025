@@ -13,8 +13,8 @@ const AssetLocation = ({ data }) => {
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={70}
-                outerRadius={100}
+                innerRadius={50}
+                outerRadius={90}
                 dataKey="value"
                 label={({ value }) => `$${value.toLocaleString()}`} // <-- Custom label
                 >

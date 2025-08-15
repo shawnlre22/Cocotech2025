@@ -255,7 +255,7 @@ export const BuySellForm = () => {
         <Form.Label >Price per Unit</Form.Label>
         <InputGroup>
         <InputGroup.Text>$</InputGroup.Text>
-        <Form.Control  placeholder={unitStockPrices[stockId] ?? "ERROR"} />
+        <Form.Control  placeholder={Number(unitStockPrices[stockId]).toFixed(2) ?? "ERROR"} />
         </InputGroup>
       </Form.Group>
       </fieldset>
