@@ -140,6 +140,8 @@ React.useEffect(() => {
               resultMap[txn_minute].total_invested_amt += amt;
             });
 
+            console.log("FETCH:",investedAmtJson.result)
+
             setTotalInvestedAmt(Object.values(resultMap));
             
 

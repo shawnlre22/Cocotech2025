@@ -5,10 +5,11 @@ import './TotalInvestedAmt.css';
 export const TotalInvestedAmt = ({data}) => {
 
     let data1 = JSON.parse(JSON.stringify(data));
-
+    console.log("HI1:",data, data.slice(-5))
     for (let i=1; i<data1.length; i++) {
         data1[i].total_invested_amt = Number(Number(data1[i].total_invested_amt) + Number(data1[i-1].total_invested_amt)).toFixed(2)
     }
+    console.log("HI2:",data1, data1.slice(-5))
 
     const dummyData = data1.slice(-5)
     let yr = 2020

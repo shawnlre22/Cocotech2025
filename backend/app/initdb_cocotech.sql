@@ -155,6 +155,7 @@ CREATE OR REPLACE VIEW invested_amt AS
 SELECT 
     user_id,
     stock_id,
+    DATE_FORMAT(txn_time, '%Y-%m-%d %H:%i') AS txn_minute,
     SUM(
         CASE 
             WHEN is_buy = b'1' THEN txn_amt
@@ -162,5 +163,5 @@ SELECT
         END
     ) AS invested_amt
 FROM txn_history
-GROUP BY user_id, stock_id
+GROUP BY user_id, stock_id, txn_minute
 HAVING invested_amt <> 0;

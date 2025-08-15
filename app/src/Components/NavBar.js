@@ -12,7 +12,6 @@ function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="trading">Trading</Nav.Link>
             <Nav.Link href="buysell">BuySell</Nav.Link>
             <Nav.Link href="tradehistory">History</Nav.Link>
             <NavDropdown title="Profile" id="basic-nav-dropdown">

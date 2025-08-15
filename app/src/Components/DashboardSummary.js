@@ -15,7 +15,7 @@ export default function DashboardSummary({ title, data, tooltipText }) {
             {title}
           </Card.Title>
           <Card.Text className="dashboard-summary-data">
-            HKD {data}
+            $ {data}
           </Card.Text>
         </Card.Body>
       </Card>
