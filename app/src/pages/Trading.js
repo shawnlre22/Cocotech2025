@@ -350,7 +350,7 @@ return (
   <Container>
     <Row>
     <Col sm={4}>
-        <h4>Asset Location</h4>
+        <h4>Asset Allocation</h4>
          {/* Donut chart */}
          <AssetLocation data={assetData} />
       </Col>
