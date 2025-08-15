@@ -238,8 +238,10 @@ return (
 <>
 <NavBar></NavBar>
   <Container>
+  
             <br />
             <Form onSubmit={handleSubmit}>
+            <h3>Wallet</h3>
               <Row xs="auto">
                 <Col>
                   <Form.Group className="mb-3">
